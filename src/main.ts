@@ -1,24 +1,13 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import Car from './car';
+import './styles/style.css'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const myCanvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+myCanvas.height = window.innerHeight;
+myCanvas.width = 200;
+
+
+const ctx = myCanvas.getContext("2d") as CanvasRenderingContext2D;
+
+const car = new Car(100, 100, 30, 50);
+car.draw(ctx);
