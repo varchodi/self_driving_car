@@ -20,12 +20,17 @@ animate();
 
 
 function animate() {
+    //??moved up ...
+    car.update();
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
     myCanvas.height = window.innerHeight;
-    car.update();
+    //?? make camera move with the car 
+    ctx.translate(0, -car.y+myCanvas.height*.7); 
+
     road.draw(ctx); //draw road marks ...
     car.draw(ctx);
+
     //?? this one call animate func as many of possible , in continious 
     requestAnimationFrame(animate);
 }
