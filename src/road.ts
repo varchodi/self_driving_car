@@ -5,6 +5,7 @@ export default class Road{
     right: number;
     top: number;
     bottom: number;
+    boarders: { x: number; y: number; }[][];
     constructor(public x: number, public width: number,public laneCount:number=3) {
         this.x = x;
         this.width = width;
@@ -15,6 +16,16 @@ export default class Road{
         const infinity = 1000000;
         this.top = -infinity;
         this.bottom = infinity;
+
+        const topLeft = { x: this.left, y: this.top };
+        const bottomLeft = { x: this.left, y: this.bottom }; 
+        const topRight = { x: this.right, y: this.top };
+        const bottomRight = { x: this.right, y: this.bottom };
+        //be used for coll detectors
+        this.boarders = [
+            [topLeft, bottomLeft],
+            [topRight,bottomRight]
+        ]
     };
 
 
@@ -31,24 +42,27 @@ export default class Road{
 
         //interpolation to find x poinst between two points
         //used it to draw indides rads bands ,,
-        for (let i = 0; i <= this.laneCount; i++) {
+        ctx.setLineDash([20, 20]);
+        for (let i = 1; i <= this.laneCount-1; i++) {
             const x = lerp(
                 this.left,
                 this.right,
                 i/this.laneCount
             )
-            //?? line dash 
-            if (i > 0 && i<this.laneCount) {
-                ctx.setLineDash([20, 20]);
-            } else {
-                ctx.setLineDash([]);
-            }
+           
             ctx.beginPath();
             ctx.moveTo(x, this.top);
             ctx.lineTo(x, this.bottom);
             ctx.stroke();
         }
 
-
+        //reset linedashes
+        ctx.setLineDash([]);
+        this.boarders.forEach(border => {
+            ctx.beginPath();
+            ctx.moveTo(border[0].x, border[0].y);
+            ctx.lineTo(border[1].x, border[1].y);
+            ctx.stroke();
+        })
     }
 }
