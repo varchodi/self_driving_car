@@ -10,8 +10,8 @@ export default class Road{
         this.x = x;
         this.width = width;
         this.laneCount = laneCount;
-        this.left = x - width / 2;
-        this.right = x + width / 2;
+        this.left = x - width / 4;
+        this.right = x + width / 4;
 
         const infinity = 1000000;
         this.top = -infinity;
@@ -23,9 +23,18 @@ export default class Road{
         const bottomRight = { x: this.right, y: this.bottom };
         //be used for coll detectors
         this.boarders = [
-            [topLeft, bottomLeft],
-            [topRight,bottomRight]
-        ]
+            [topLeft],
+            [topRight]
+        ];
+        //?? add more points (where road is curved )
+        for (let y = -1000; y <=0; y++) {
+            const x = Math.sin(y*.01)*50;
+            this.boarders[0].push({ x: x + this.left, y: y });
+            this.boarders[1].push({ x: x + this.right, y: y });
+        }
+
+        this.boarders[0].push(bottomLeft);
+        this.boarders[1].push(bottomRight);
     };
 
 
@@ -40,6 +49,7 @@ export default class Road{
         ctx.lineWidth = 5;
         ctx.strokeStyle = 'white';
 
+        /*
         //interpolation to find x poinst between two points
         //used it to draw indides rads bands ,,
         ctx.setLineDash([20, 20]);
@@ -55,13 +65,17 @@ export default class Road{
             ctx.lineTo(x, this.bottom);
             ctx.stroke();
         }
+        */
 
         //reset linedashes
         ctx.setLineDash([]);
         this.boarders.forEach(border => {
             ctx.beginPath();
             ctx.moveTo(border[0].x, border[0].y);
-            ctx.lineTo(border[1].x, border[1].y);
+            for (let i = 1; i < border.length; i++){
+                
+                ctx.lineTo(border[i].x, border[i].y);
+            }
             ctx.stroke();
         })
     }
