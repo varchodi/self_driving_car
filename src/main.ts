@@ -10,9 +10,10 @@ myCanvas.width = 200;
 
 const ctx = myCanvas.getContext("2d") as CanvasRenderingContext2D;
 
-const car = new Car(100, 100, 30, 50);
-
 const road = new Road(myCanvas.width / 2, myCanvas.width *0.9);
+
+const car = new Car(road.getLaneCenter(1), 100, 30, 50);
+
 
 //animate ...
 animate();

@@ -1,3 +1,5 @@
+import { lerp } from "./util";
+
 export default class Road{
     left: number;
     right: number;
@@ -15,17 +17,38 @@ export default class Road{
         this.bottom = infinity;
     };
 
+
+    //center lane (put car at a given lane ...) 
+    getLaneCenter(laneIndex: number) {
+        const laneWidth = this.width / this.laneCount;
+        return this.left + laneWidth / 2 +
+            Math.min(laneIndex ,this.laneCount-1)* laneWidth;
+    }
+
     draw(ctx: CanvasRenderingContext2D) {
         ctx.lineWidth = 5;
         ctx.strokeStyle = 'white';
-        ctx.beginPath();
-        ctx.moveTo(this.left, this.top);
-        ctx.lineTo(this.left, this.bottom);
-        ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(this.right, this.top);
-        ctx.lineTo(this.right, this.bottom);
-        ctx.stroke();
+        //interpolation to find x poinst between two points
+        //used it to draw indides rads bands ,,
+        for (let i = 0; i <= this.laneCount; i++) {
+            const x = lerp(
+                this.left,
+                this.right,
+                i/this.laneCount
+            )
+            //?? line dash 
+            if (i > 0 && i<this.laneCount) {
+                ctx.setLineDash([20, 20]);
+            } else {
+                ctx.setLineDash([]);
+            }
+            ctx.beginPath();
+            ctx.moveTo(x, this.top);
+            ctx.lineTo(x, this.bottom);
+            ctx.stroke();
+        }
+
+
     }
 }
