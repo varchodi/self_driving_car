@@ -21,7 +21,7 @@ animate();
 
 function animate() {
     //??moved up ...
-    car.update();
+    car.update(road.boarders);
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
     myCanvas.height = window.innerHeight;

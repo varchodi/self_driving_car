@@ -25,16 +25,19 @@ export default class Car{
         //this.angle = Math.PI/2; //maybe better
 
         //define sensors 
-        this.sensor = new Sensor(this);
+        this.sensor = new Sensor();
         // add controls 
         this.controls = new Controls();
 
     }
 
     //update stuff while car control
-    update() {
+    update(roadBoarder: {
+        x: number;
+        y: number;
+    }[][] ) {
         this.#move();
-        this.sensor.update();
+        this.sensor.update(this.x,this.y,this.angle,roadBoarder);
     }
     //move
      #move() {
