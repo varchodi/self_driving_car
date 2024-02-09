@@ -1,4 +1,5 @@
 import Controls from "./controls";
+import Sensor from "./sensor";
 
 export default class Car{
     controls: Controls;
@@ -7,6 +8,7 @@ export default class Car{
     maxSpeed: number;
     friction: number;
     angle: number;
+    sensor: Sensor;
 
     constructor(public x:number, public y:number,public width:number,public height:number) {
         this.x = x;
@@ -20,14 +22,25 @@ export default class Car{
         this.friction = .05;
 
         this.angle =0;
-        //this.angle = Math.PI/2; //maybe better 
-        
+        //this.angle = Math.PI/2; //maybe better
+
+        //define sensors 
+        this.sensor = new Sensor();
+        // add controls 
         this.controls = new Controls();
 
     }
 
     //update stuff while car control
-    update() {
+    update(roadBoarder: {
+        x: number;
+        y: number;
+    }[][] ) {
+        this.#move();
+        this.sensor.update(this.x,this.y,this.angle,roadBoarder);
+    }
+    //move
+     #move() {
         //< n > affect only speed 
         if (this.controls.forward) {
             this.speed += this.acceleration;
@@ -89,5 +102,7 @@ export default class Car{
         );
         ctx.fill();
         ctx.restore();
+        //drw sensors
+        this.sensor.draw(ctx);
     }
 }
