@@ -1,4 +1,5 @@
 import Car from './car';
+import Road from './road';
 import './styles/style.css'
 
 const myCanvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -9,20 +10,27 @@ myCanvas.width = 200;
 
 const ctx = myCanvas.getContext("2d") as CanvasRenderingContext2D;
 
+const road = new Road(myCanvas.width / 2, myCanvas.width *0.9);
+
 const car = new Car(100, 100, 30, 50);
-//?? removed bcz of sesor stuff in future 
-//car.draw(ctx);
+
 
 //animate ...
 animate();
 
 
 function animate() {
+    //??moved up ...
+    car.update();
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
     myCanvas.height = window.innerHeight;
-    car.update();
+    //?? make camera move with the car 
+    ctx.translate(0, -car.y+myCanvas.height*.7); 
+
+    road.draw(ctx); //draw road marks ...
     car.draw(ctx);
+
     //?? this one call animate func as many of possible , in continious 
     requestAnimationFrame(animate);
 }
