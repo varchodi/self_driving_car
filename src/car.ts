@@ -1,5 +1,6 @@
 import Controls from "./controls";
 import Sensor from "./sensor";
+import { polyIntersect } from "./util";
 
 export default class Car {
     controls: Controls;
@@ -9,7 +10,8 @@ export default class Car {
     friction: number;
     angle: number;
     sensor: Sensor;
-    polygon: { x: number; y: number; }[] = [];
+    polygon: { x: number; y: number; }[];
+    damages: boolean;
 
     constructor(public x: number, public y: number, public width: number, public height: number) {
         this.x = x;
@@ -25,10 +27,14 @@ export default class Car {
         this.angle = 0;
         //this.angle = Math.PI/2; //maybe better
 
+        this.damages = false;
+
         //define sensors 
         this.sensor = new Sensor();
         // add controls 
         this.controls = new Controls();
+
+        this.polygon = [];
 
     }
 
@@ -40,8 +46,17 @@ export default class Car {
         this.#move();
         //update car poolygon on each move
         this.polygon = this.#createPolygon()
-
+        this.damages = this.#assesssDamages(roadBoarder);
         this.sensor.update(this.x, this.y, this.angle, roadBoarder);
+    }
+
+    #assesssDamages(roadBoarder: Array<typeof this.polygon>): boolean {
+        for (let i = 0; i < roadBoarder.length; i++) {
+            if (polyIntersect(this.polygon, roadBoarder[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     #createPolygon() {
@@ -62,19 +77,25 @@ export default class Car {
         points.push({
             // x and y , from coversion of polar coordinates top cartesian
             x: this.x - Math.sin(this.angle - alpha) * rad,
-            y: this.x - Math.cos(this.angle - alpha) * rad
+            y: this.y - Math.cos(this.angle - alpha) * rad
         });
         // t-l
         points.push({
             // x and y , from coversion of polar coordinates top cartesian
             x: this.x - Math.sin(this.angle + alpha) * rad,
-            y: this.x - Math.cos(this.angle + alpha) * rad
+            y: this.y - Math.cos(this.angle + alpha) * rad
         });
         // b-r
         points.push({
             // x and y , from coversion of polar coordinates top cartesian
+            x: this.x - Math.sin(Math.PI + this.angle - alpha) * rad,
+            y: this.y - Math.cos(Math.PI + this.angle - alpha) * rad
+        });
+        // b-l
+        points.push({
+            // x and y , from coversion of polar coordinates top cartesian
             x: this.x - Math.sin(Math.PI + this.angle + alpha) * rad,
-            y: this.x - Math.cos(Math.PI + this.angle + alpha) * rad
+            y: this.y - Math.cos(Math.PI + this.angle + alpha) * rad
         });
 
         return points;
@@ -129,6 +150,11 @@ export default class Car {
     }
 
     public draw(ctx: CanvasRenderingContext2D) {
+        if (this.damages) {
+            ctx.fillStyle = "gray";
+        } else {
+            ctx.fillStyle = "black"
+        }
         ctx.beginPath();
         //let's now draw the polygon in the car place
         ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
@@ -136,6 +162,7 @@ export default class Car {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
         ctx.fill();
+
         //drw sensors
         this.sensor.draw(ctx);
     }
