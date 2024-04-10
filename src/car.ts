@@ -9,7 +9,7 @@ export default class Car {
     maxSpeed: number;
     friction: number;
     angle: number;
-    sensor: Sensor;
+    sensor?: Sensor;
     polygon: { x: number; y: number; }[];
     damages: boolean;
 
@@ -29,8 +29,11 @@ export default class Car {
 
         this.damages = false;
 
-        //define sensors 
-        this.sensor = new Sensor();
+        //define sensors
+        //remove sesnsor from traffic cars
+        if (controlType !== "DUMMY") {
+            this.sensor = new Sensor();
+        }
         // add controls 
         this.controls = new Controls(controlType);
 
@@ -42,24 +45,33 @@ export default class Car {
     update(roadBoarder: {
         x: number;
         y: number;
-    }[][]) {
+    }[][],traffic:typeof this[]) {
         //?? if car not damaged ; can't move anymore ... (car stop)
         if (!this.damages) {
             
             this.#move();
             //update car poolygon on each move
             this.polygon = this.#createPolygon()
-            this.damages = this.#assesssDamages(roadBoarder);
+            this.damages = this.#assesssDamages(roadBoarder,traffic);
         }
-        this.sensor.update(this.x, this.y, this.angle, roadBoarder);
+        //?? update sensors if avalaible
+        if (this.sensor) this?.sensor.update(this.x, this.y, this.angle, roadBoarder,traffic);
     }
 
-    #assesssDamages(roadBoarder: Array<typeof this.polygon>): boolean {
+    #assesssDamages(roadBoarder: Array<typeof this.polygon>,traffic:Car[]): boolean {
         for (let i = 0; i < roadBoarder.length; i++) {
                 if (polyIntersect([...this.polygon, this.polygon[0]], roadBoarder[i])) {
                 return true;
             }
         }
+
+        //intersect with traffic
+        for (let i = 0; i < traffic.length; i++) {
+            const poly = traffic[i].polygon;
+            if (polyIntersect([...this.polygon, this.polygon[0]], [...poly,poly[0]])) {
+            return true;
+        }
+    }
         return false;
     }
 
@@ -168,6 +180,6 @@ export default class Car {
         ctx.fill();
 
         //drw sensors
-        this.sensor.draw(ctx);
+       if (this.sensor) this.sensor.draw(ctx);
     }
 }

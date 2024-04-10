@@ -25,11 +25,11 @@ animate();
 function animate() {
 
     for (let i = 0; i < traffic.length; i++){
-        traffic[i].update([]);
+        traffic[i].update([],[]);
     }
 
     //??moved up ...
-    car.update(road.boarders);
+    car.update(road.boarders,traffic);
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
     myCanvas.height = window.innerHeight;
