@@ -11,15 +11,23 @@ myCanvas.width = 200;
 const ctx = myCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 const road = new Road(myCanvas.width / 2, myCanvas.width *0.9);
+//add controlType prop to car
+const car = new Car(100, 100, 30, 50,"KEYS");
 
-const car = new Car(100, 100, 30, 50);
-
+const traffic = [
+    new Car(100, -100, 30, 50,"DUMMY",2)
+];
 
 //animate ...
 animate();
 
 
 function animate() {
+
+    for (let i = 0; i < traffic.length; i++){
+        traffic[i].update([]);
+    }
+
     //??moved up ...
     car.update(road.boarders);
     //this one reset the size (height of canvas when windows resized)
@@ -29,6 +37,11 @@ function animate() {
     ctx.translate(0, -car.y+myCanvas.height*.7); 
 
     road.draw(ctx); //draw road marks ...
+
+    // draw traffic (cars others)
+    for (let i = 0; i < traffic.length; i++) {
+        traffic[i].draw(ctx);
+    }
     car.draw(ctx);
 
     //?? this one call animate func as many of possible , in continious 

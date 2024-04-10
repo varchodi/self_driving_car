@@ -1,12 +1,12 @@
 import { lerp } from "./util";
 
-export default class Road{
+export default class Road {
     left: number;
     right: number;
     top: number;
     bottom: number;
     boarders: { x: number; y: number; }[][];
-    constructor(public x: number, public width: number,public laneCount:number=3) {
+    constructor(public x: number, public width: number, public laneCount: number = 3) {
         this.x = x;
         this.width = width;
         this.laneCount = laneCount;
@@ -18,7 +18,7 @@ export default class Road{
         this.bottom = infinity;
 
         const topLeft = { x: this.left, y: this.top };
-        const bottomLeft = { x: this.left, y: this.bottom }; 
+        const bottomLeft = { x: this.left, y: this.bottom };
         const topRight = { x: this.right, y: this.top };
         const bottomRight = { x: this.right, y: this.bottom };
         //be used for coll detectors
@@ -27,8 +27,8 @@ export default class Road{
             [topRight]
         ];
         //?? add more points (where road is curved )
-        for (let y = -1000; y <=0; y++) {
-            const x = Math.sin(y*.01)*50;
+        for (let y = -1000; y <= 0; y++) {
+            const x = Math.sin(y * .01) * 50;
             this.boarders[0].push({ x: x + this.left, y: y });
             this.boarders[1].push({ x: x + this.right, y: y });
         }
@@ -42,7 +42,7 @@ export default class Road{
     getLaneCenter(laneIndex: number) {
         const laneWidth = this.width / this.laneCount;
         return this.left + laneWidth / 2 +
-            Math.min(laneIndex ,this.laneCount-1)* laneWidth;
+            Math.min(laneIndex, this.laneCount - 1) * laneWidth;
     }
 
     draw(ctx: CanvasRenderingContext2D) {
@@ -72,8 +72,8 @@ export default class Road{
         this.boarders.forEach(border => {
             ctx.beginPath();
             ctx.moveTo(border[0].x, border[0].y);
-            for (let i = 1; i < border.length; i++){
-                
+            for (let i = 1; i < border.length; i++) {
+
                 ctx.lineTo(border[i].x, border[i].y);
             }
             ctx.stroke();

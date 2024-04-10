@@ -13,7 +13,7 @@ export default class Car {
     polygon: { x: number; y: number; }[];
     damages: boolean;
 
-    constructor(public x: number, public y: number, public width: number, public height: number) {
+    constructor(public x: number, public y: number, public width: number, public height: number,public controlType:string,maxSpeed:number=3) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -21,7 +21,7 @@ export default class Car {
 
         this.speed = 0;
         this.acceleration = 0.2;
-        this.maxSpeed = 3;
+        this.maxSpeed = maxSpeed;
         this.friction = .05;
 
         this.angle = 0;
@@ -32,7 +32,7 @@ export default class Car {
         //define sensors 
         this.sensor = new Sensor();
         // add controls 
-        this.controls = new Controls();
+        this.controls = new Controls(controlType);
 
         this.polygon = [];
 
@@ -43,16 +43,20 @@ export default class Car {
         x: number;
         y: number;
     }[][]) {
-        this.#move();
-        //update car poolygon on each move
-        this.polygon = this.#createPolygon()
-        this.damages = this.#assesssDamages(roadBoarder);
+        //?? if car not damaged ; can't move anymore ... (car stop)
+        if (!this.damages) {
+            
+            this.#move();
+            //update car poolygon on each move
+            this.polygon = this.#createPolygon()
+            this.damages = this.#assesssDamages(roadBoarder);
+        }
         this.sensor.update(this.x, this.y, this.angle, roadBoarder);
     }
 
     #assesssDamages(roadBoarder: Array<typeof this.polygon>): boolean {
         for (let i = 0; i < roadBoarder.length; i++) {
-            if (polyIntersect(this.polygon, roadBoarder[i])) {
+                if (polyIntersect([...this.polygon, this.polygon[0]], roadBoarder[i])) {
                 return true;
             }
         }
