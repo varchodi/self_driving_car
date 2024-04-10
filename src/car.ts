@@ -65,7 +65,7 @@ export default class Car {
             }
         }
 
-        //intersect with traffic
+        //intersect with traffic cars 
         for (let i = 0; i < traffic.length; i++) {
             const poly = traffic[i].polygon;
             if (polyIntersect([...this.polygon, this.polygon[0]], [...poly,poly[0]])) {
