@@ -1,4 +1,23 @@
+class NeuralNetwork{
+    levels : Level[];
+    constructor(public neuronCounts: number[]) {
+        this.levels = [];
+        for (let i = 0; i < neuronCounts.length; i++) {
+            this.levels.push(new Level(
+            neuronCounts[i],neuronCounts[i+1]
+        ))
+        }
+    }
 
+    static feedForward(givenInputs:number[], network: NeuralNetwork):number[] {
+        let outputs = Level.feedForward(givenInputs, network.levels[0]);
+
+        for (let i = 0; i < network.levels.length; i++) {
+            outputs =Level.feedForward(outputs,network.levels[i]);
+        }
+        return outputs;
+    }
+}
 class Level{
     input: number[];
     outputs: number[];
@@ -34,7 +53,7 @@ class Level{
         }
     }
 
-    static feedForward(givenInput: Array<number>, level: Level) {
+    static feedForward(givenInput: Array<number>, level: Level):number[] {
         level.input = [...givenInput]
         //or
         // for (let i = 0; i < level.input.length; i++) {
