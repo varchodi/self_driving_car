@@ -13,6 +13,7 @@ export default class Car {
     brain?: NeuralNetwork;
     polygon: { x: number; y: number; }[];
     damages: boolean;
+    useBrain?: boolean;
 
     constructor(public x: number, public y: number, public width: number, public height: number,public controlType:string,maxSpeed:number=3) {
         this.x = x;
@@ -30,9 +31,10 @@ export default class Car {
 
         this.damages = false;
 
+        this.useBrain = controlType == "AI";
         //define sensors
         //remove sesnsor from traffic cars
-        if (controlType !== "DUMMY") {
+        if (controlType != "DUMMY") {
             this.sensor = new Sensor();
 
             //define brain too
@@ -71,6 +73,13 @@ export default class Car {
             
             const outputs = this.brain ? NeuralNetwork.feedForward(offset, this.brain) : [];
             
+            // make the car runs by itself according to inputs
+            if (this.useBrain) {
+                this.controls.forward = Boolean(outputs[0]);
+                this.controls.left = Boolean(outputs[1]);
+                this.controls.right = Boolean(outputs[2]);
+                this.controls.reverse = Boolean(outputs[3]);
+            }
             //console.log(outputs)
         }
     }
