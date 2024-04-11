@@ -1,8 +1,8 @@
-class NeuralNetwork{
+export class NeuralNetwork{
     levels : Level[];
     constructor(public neuronCounts: number[]) {
         this.levels = [];
-        for (let i = 0; i < neuronCounts.length; i++) {
+        for (let i = 0; i < neuronCounts.length-1; i++) {
             this.levels.push(new Level(
             neuronCounts[i],neuronCounts[i+1]
         ))
@@ -43,9 +43,8 @@ class Level{
             for (let j = 0; j < level.outputs.length; j++) {
                 //init weights with ran values 
                 level.weights[i][j] = Math.random() * 2 - 1;
-                
             }
-            
+
         }
         //init biases array
         for (let i = 0; i < level.biases.length; i++) {
@@ -54,17 +53,18 @@ class Level{
     }
 
     static feedForward(givenInput: Array<number>, level: Level):number[] {
-        level.input = [...givenInput]
+        //level.input = [...givenInput]
         //or
-        // for (let i = 0; i < level.input.length; i++) {
-        //     level.input[i] = givenInput[i];
+        for (let i = 0; i < level.input.length; i++) {
+            level.input[i] = givenInput[i];
             
-        // }
+        }
 
         for (let i = 0; i < level.outputs.length; i++) {
             let sum = 0;
             for (let j = 0; j < level.input.length; j++) {
-                sum += level.input[j]*level.weights[j][i];
+                 sum += level.input[j]*level.weights[j][i];
+                // console.log(level.weights[5][0])
             }
 
             if (sum > level.biases[i]) {

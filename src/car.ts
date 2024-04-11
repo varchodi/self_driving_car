@@ -1,7 +1,7 @@
 import Controls from "./controls";
 import Sensor from "./sensor";
 import { polyIntersect } from "./util";
-
+import { NeuralNetwork } from "./network";
 export default class Car {
     controls: Controls;
     speed: number;
@@ -10,6 +10,7 @@ export default class Car {
     friction: number;
     angle: number;
     sensor?: Sensor;
+    brain?: NeuralNetwork;
     polygon: { x: number; y: number; }[];
     damages: boolean;
 
@@ -33,6 +34,14 @@ export default class Car {
         //remove sesnsor from traffic cars
         if (controlType !== "DUMMY") {
             this.sensor = new Sensor();
+
+            //define brain too
+            // if (this.sensor) {
+                this.brain = new NeuralNetwork(
+                    //raycounts, 6-> neursons on hidden layer, 4->output size (4 directions)
+                    [this.sensor.rayCount, 6, 4]
+                )
+            // }
         }
         // add controls 
         this.controls = new Controls(controlType);
@@ -55,7 +64,15 @@ export default class Car {
             this.damages = this.#assesssDamages(roadBoarder,traffic);
         }
         //?? update sensors if avalaible
-        if (this.sensor) this?.sensor.update(this.x, this.y, this.angle, roadBoarder,traffic);
+        if (this.sensor) {
+            this?.sensor.update(this.x, this.y, this.angle, roadBoarder, traffic);
+            //!! close object is to the car, higher is the value
+            const offset = this.sensor.readings.map(s => s == null ? 0 : 1 - s.offset);
+            
+            const outputs = this.brain ? NeuralNetwork.feedForward(offset, this.brain) : [];
+            
+            //console.log(outputs)
+        }
     }
 
     #assesssDamages(roadBoarder: Array<typeof this.polygon>,traffic:Car[]): boolean {
