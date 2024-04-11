@@ -17,6 +17,7 @@ export class Visualizer{
 
         const nodeRadius = 18;
 
+        //!! 0th layer of input layer
         for (let i = 0; i < level.input.length; i++){
             const x = lerp(left, right, level.input.length == 1 ? .5 : i / (level.input.length - 1));
 
@@ -27,5 +28,15 @@ export class Visualizer{
 
         }
 
+        //!! output layer 
+        for (let i = 0; i < level.outputs.length; i++){
+            const x = lerp(left, right, level.outputs.length == 1 ? .5 : i / (level.input.length - 1));
+
+            ctx.beginPath();
+            ctx.arc(x, bottom, nodeRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+
+        }
     }
 }
