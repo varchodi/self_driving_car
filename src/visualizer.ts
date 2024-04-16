@@ -27,6 +27,7 @@ export class Visualizer{
                 const value = weights[i][j];
                 ctx.strokeStyle = getRGBA(value);
                 ctx.stroke();
+
             }
             
         }
@@ -35,9 +36,15 @@ export class Visualizer{
         for (let i = 0; i < input.length; i++){
             const x = Visualizer.getNodeX(input, i, left, right);
 
+            //for styling (2 arcs ) ??
             ctx.beginPath();
             ctx.arc(x, bottom, nodeRadius, 0, Math.PI * 2);
-            ctx.fillStyle = "white";
+            ctx.fillStyle = "black";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x, bottom, nodeRadius, 0.6, Math.PI * 2);
+            ctx.fillStyle = getRGBA(input[i]);
             ctx.fill();
 
         }
@@ -47,9 +54,21 @@ export class Visualizer{
             const x = Visualizer.getNodeX(outputs, i, left, right);
 
             ctx.beginPath();
-            ctx.arc(x, top, nodeRadius, 0, Math.PI * 2);
-            ctx.fillStyle = "white";
+            ctx.arc(x, top, nodeRadius, 0.6, Math.PI * 2);
+            ctx.fillStyle = "black";
             ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x, top, nodeRadius, 0.8, Math.PI * 2);
+            ctx.fillStyle = getRGBA(outputs[i]);
+            ctx.fill();
+
+            //display biases
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.arc(x, top, nodeRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = getRGBA(biases[i]);
+            ctx.stroke();
 
         }
 
