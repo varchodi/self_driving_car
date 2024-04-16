@@ -14,12 +14,12 @@ export class Visualizer{
     static drawLevel(ctx: CanvasRenderingContext2D, level: Level, left: number, top: number, width: number, height: number) {
         const right = left + width;
         const bottom = top + height;
-
+        const {input,outputs } = level;
         const nodeRadius = 18;
 
         //!! 0th layer of input layer
-        for (let i = 0; i < level.input.length; i++){
-            const x = lerp(left, right, level.input.length == 1 ? .5 : i / (level.input.length - 1));
+        for (let i = 0; i < input.length; i++){
+            const x = Visualizer.getNodeX(input, i, left, right);
 
             ctx.beginPath();
             ctx.arc(x, bottom, nodeRadius, 0, Math.PI * 2);
@@ -29,14 +29,31 @@ export class Visualizer{
         }
 
         //!! output layer 
-        for (let i = 0; i < level.outputs.length; i++){
-            const x = lerp(left, right, level.outputs.length == 1 ? .5 : i / (level.input.length - 1));
+        for (let i = 0; i < outputs.length; i++){
+            const x = Visualizer.getNodeX(outputs, i, left, right);
 
             ctx.beginPath();
-            ctx.arc(x, bottom, nodeRadius, 0, Math.PI * 2);
+            ctx.arc(x, top, nodeRadius, 0, Math.PI * 2);
             ctx.fillStyle = "white";
             ctx.fill();
 
         }
+
+        //draw connections;
+        for (let i = 0; i < input.length; i++) {
+            for (let j = 0; j < outputs.length; j++) {
+                ctx.beginPath();
+                ctx.moveTo(Visualizer.getNodeX(input, i, left, right), bottom);
+                ctx.lineTo(this.getNodeX(outputs, j, left, right), top);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "orange";
+                ctx.stroke();
+            }
+            
+        }
+    }
+
+    private static getNodeX(nodes: any, index: number, left: number, right: number) {
+        return lerp(left,right,nodes.length==1?.5:index/(nodes.length-1))
     }
 }
