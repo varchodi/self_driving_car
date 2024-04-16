@@ -1,5 +1,5 @@
 import { Level, NeuralNetwork } from "./network";
-import { lerp } from "./util";
+import { getRGBA, lerp } from "./util";
 
 export class Visualizer{
     static drawNetwork(ctx: CanvasRenderingContext2D,network?: NeuralNetwork) {
@@ -14,8 +14,22 @@ export class Visualizer{
     static drawLevel(ctx: CanvasRenderingContext2D, level: Level, left: number, top: number, width: number, height: number) {
         const right = left + width;
         const bottom = top + height;
-        const {input,outputs } = level;
+        const {input,outputs,weights,biases } = level;
         const nodeRadius = 18;
+        
+        //draw connections;
+        for (let i = 0; i < input.length; i++) {
+            for (let j = 0; j < outputs.length; j++) {
+                ctx.beginPath();
+                ctx.moveTo(Visualizer.getNodeX(input, i, left, right), bottom);
+                ctx.lineTo(this.getNodeX(outputs, j, left, right), top);
+                ctx.lineWidth = 2;
+                const value = weights[i][j];
+                ctx.strokeStyle = getRGBA(value);
+                ctx.stroke();
+            }
+            
+        }
 
         //!! 0th layer of input layer
         for (let i = 0; i < input.length; i++){
@@ -39,18 +53,6 @@ export class Visualizer{
 
         }
 
-        //draw connections;
-        for (let i = 0; i < input.length; i++) {
-            for (let j = 0; j < outputs.length; j++) {
-                ctx.beginPath();
-                ctx.moveTo(Visualizer.getNodeX(input, i, left, right), bottom);
-                ctx.lineTo(this.getNodeX(outputs, j, left, right), top);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = "orange";
-                ctx.stroke();
-            }
-            
-        }
     }
 
     private static getNodeX(nodes: any, index: number, left: number, right: number) {
