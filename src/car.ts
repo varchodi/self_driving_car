@@ -191,7 +191,7 @@ export default class Car {
         //this.y -= this.speed;
     }
 
-    public draw(ctx: CanvasRenderingContext2D) {
+    public draw(ctx: CanvasRenderingContext2D,drawSensor:boolean=false) {
         if (this.damages) {
             ctx.fillStyle = "gray";
         } else {
@@ -206,6 +206,6 @@ export default class Car {
         ctx.fill();
 
         //drw sensors
-       if (this.sensor) this.sensor.draw(ctx);
+       if (this.sensor && drawSensor) this.sensor.draw(ctx);
     }
 }

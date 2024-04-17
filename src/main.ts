@@ -59,12 +59,13 @@ function animate() {
     for (let i = 0; i < traffic.length; i++) {
         traffic[i].draw(carCtx);
     }
-
+    //?? make other cars transparents 
+    carCtx.globalAlpha = 0.2; 
     for (let i = 0; i < cars.length; i++) {
         cars[i].draw(carCtx);
     }
-
-    // car.draw(carCtx);
+    carCtx.globalAlpha = 1;
+     cars[0].draw(carCtx,true);
 
     // show car nn network (for the first one only)
     Visualizer.drawNetwork(networkCtx, cars[0]?.brain!);
