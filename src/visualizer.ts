@@ -2,16 +2,25 @@ import { Level, NeuralNetwork } from "./network";
 import { getRGBA, lerp } from "./util";
 
 export class Visualizer{
-    static drawNetwork(ctx: CanvasRenderingContext2D,network?: NeuralNetwork) {
+    static drawNetwork(ctx: CanvasRenderingContext2D,network: NeuralNetwork) {
         const margin = 50;
         const left = margin;
         const top = margin;
         const width = ctx.canvas.width - margin * 2;
-        const hight = ctx.canvas.height - margin * 2;
-        Visualizer.drawLevel(ctx, network?.levels[0]!, left, top, width, hight);
+        const height = ctx.canvas.height - margin * 2;
+
+        const LevelHeight = height / network.levels.length;
+
+        for (let i = network.levels.length-1; i >= 0; i--) {
+            const LevelTop=top+lerp(height-LevelHeight,0,network.levels.length==1?0.5:i/(network.levels.length-1))
+        
+            Visualizer.drawLevel(ctx, network.levels[i], left, LevelTop, width, LevelHeight,i === network.levels.length - 1
+                ? ['↑', '←', '→', '↓']
+                : []);
+        }
     }
 
-    static drawLevel(ctx: CanvasRenderingContext2D, level: Level, left: number, top: number, width: number, height: number) {
+    static drawLevel(ctx: CanvasRenderingContext2D, level: Level, left: number, top: number, width: number, height: number,outputLabels:string[]) {
         const right = left + width;
         const bottom = top + height;
         const {input,outputs,weights,biases } = level;
@@ -43,7 +52,7 @@ export class Visualizer{
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x, bottom, nodeRadius, 0.6, Math.PI * 2);
+            ctx.arc(x, bottom, nodeRadius*0.6,0, Math.PI * 2);
             ctx.fillStyle = getRGBA(input[i]);
             ctx.fill();
 
@@ -54,23 +63,36 @@ export class Visualizer{
             const x = Visualizer.getNodeX(outputs, i, left, right);
 
             ctx.beginPath();
-            ctx.arc(x, top, nodeRadius, 0.6, Math.PI * 2);
+            ctx.arc(x, top, nodeRadius, 0, Math.PI * 2);
             ctx.fillStyle = "black";
             ctx.fill();
 
             ctx.beginPath();
-            ctx.arc(x, top, nodeRadius, 0.8, Math.PI * 2);
+            ctx.arc(x, top, nodeRadius* 0.6,0, Math.PI * 2);
             ctx.fillStyle = getRGBA(outputs[i]);
             ctx.fill();
 
             //display biases
             ctx.beginPath();
             ctx.lineWidth = 2;
-            ctx.arc(x, top, nodeRadius, 0, Math.PI * 2);
+            ctx.arc(x, top, nodeRadius*0.8,0, Math.PI * 2);
             ctx.strokeStyle = getRGBA(biases[i]);
             ctx.stroke();
 
+            //draw labels 
+            if (outputLabels[i]) {
+                ctx.beginPath();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'black';
+                ctx.strokeStyle = 'white';
+                ctx.font = (nodeRadius * 1.2) + 'px Arial';
+                ctx.fillText(outputLabels[i], x , top + nodeRadius * 0.1)
+                ctx.lineWidth = 0.5;
+                ctx.strokeText(outputLabels[i], x, top)
+            }
         }
+
 
     }
 

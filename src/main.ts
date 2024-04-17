@@ -15,9 +15,12 @@ networkCanvas.width = 450;
 const carCtx = carCanvas.getContext("2d") as CanvasRenderingContext2D;
 const networkCtx = networkCanvas.getContext("2d") as CanvasRenderingContext2D;
 
+
 const road = new Road(carCanvas.width / 2, carCanvas.width *0.9);
+const N = 100;
+const cars = generateCars(N);
 //add controlType prop to car
-const car = new Car(100, 100, 30, 50,"AI");
+// const car = new Car(100, 100, 30, 50,"AI");
 
 const traffic = [
     new Car(100, -100, 30, 50,"DUMMY",2)
@@ -33,8 +36,13 @@ function animate() {
         traffic[i].update([],[]);
     }
 
+    //update cars(Ai cars tho)
+    for (let i = 0; i < cars.length; i++){
+        
+        cars[i].update(road.boarders,traffic);
+    }
+
     //??moved up ...
-    car.update(road.boarders,traffic);
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
     carCanvas.height = window.innerHeight;
@@ -43,7 +51,7 @@ function animate() {
     networkCanvas.height = window.innerHeight;
     
     //?? make camera move with the car
-    carCtx.translate(0, -car.y+carCanvas.height*.7); 
+    carCtx.translate(0, -cars[0].y+carCanvas.height*.7); 
 
     road.draw(carCtx); //draw road marks ...
 
@@ -51,11 +59,23 @@ function animate() {
     for (let i = 0; i < traffic.length; i++) {
         traffic[i].draw(carCtx);
     }
-    car.draw(carCtx);
 
-    // show car nn network 
-    
-    Visualizer.drawNetwork(networkCtx, car.brain);
+    for (let i = 0; i < cars.length; i++) {
+        cars[i].draw(carCtx);
+    }
+
+    // car.draw(carCtx);
+
+    // show car nn network (for the first one only)
+    Visualizer.drawNetwork(networkCtx, cars[0]?.brain!);
     //?? this one call animate func as many of possible , in continious 
     requestAnimationFrame(animate);
+}
+
+function generateCars(N:number):Car[] {
+    const cars: Car[] = [];
+    for (let i = 1; i <=N; i++) {
+        cars.push(new Car(100, 100, 30, 50, "AI"));
+    }
+    return cars;
 }
