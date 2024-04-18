@@ -1,6 +1,6 @@
 import Car from './car';
-import Road from './road';
 import './styles/style.css'
+import Road from './road';
 import { Visualizer } from './visualizer';
 
 const carCanvas = document.getElementById("carCanvas") as HTMLCanvasElement;
@@ -25,6 +25,13 @@ const cars = generateCars(N);
 const traffic = [
     new Car(100, -100, 30, 50,"DUMMY",2)
 ];
+//??best car 
+
+let bestCar = cars[0];
+//! load previous bestcar Brain from localStorage
+bestCar.brain = JSON.parse(localStorage.getItem("bestBrain")!);
+if (localStorage.getItem("bestBrain")) {
+}
 
 //animate ...
 animate();
@@ -42,6 +49,9 @@ function animate() {
         cars[i].update(road.boarders,traffic);
     }
 
+    //?? car with minimun Y value 
+    bestCar = cars.find(c => c.y == Math.min(...cars.map(c => c.y)))!;
+
     //??moved up ...
     //this one reset the size (height of canvas when windows resized)
     // and it also clear the canvas on car move ?? maybe 
@@ -51,7 +61,7 @@ function animate() {
     networkCanvas.height = window.innerHeight;
     
     //?? make camera move with the car
-    carCtx.translate(0, -cars[0].y+carCanvas.height*.7); 
+    carCtx.translate(0, -bestCar.y+carCanvas.height*.7); 
 
     road.draw(carCtx); //draw road marks ...
 
@@ -65,10 +75,10 @@ function animate() {
         cars[i].draw(carCtx);
     }
     carCtx.globalAlpha = 1;
-     cars[0].draw(carCtx,true);
+     bestCar.draw(carCtx,true);
 
     // show car nn network (for the first one only)
-    Visualizer.drawNetwork(networkCtx, cars[0]?.brain!);
+    Visualizer.drawNetwork(networkCtx, bestCar?.brain!);
     //?? this one call animate func as many of possible , in continious 
     requestAnimationFrame(animate);
 }
@@ -79,4 +89,13 @@ function generateCars(N:number):Car[] {
         cars.push(new Car(100, 100, 30, 50, "AI"));
     }
     return cars;
+}
+
+//??
+function save() {
+    localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
+}
+
+function discard() {
+    localStorage.removeItem("bestBrain");
 }
