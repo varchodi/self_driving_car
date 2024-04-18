@@ -2,6 +2,7 @@ import Car from './car';
 import './styles/style.css'
 import Road from './road';
 import { Visualizer } from './visualizer';
+import { NeuralNetwork } from './network';
 
 const carCanvas = document.getElementById("carCanvas") as HTMLCanvasElement;
 const networkCanvas = document.getElementById("networkCanvas") as HTMLCanvasElement;
@@ -17,7 +18,7 @@ const networkCtx = networkCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 
 const road = new Road(carCanvas.width / 2, carCanvas.width *0.9);
-const N = 100;
+const N = 250;
 const cars = generateCars(N);
 //add controlType prop to car
 // const car = new Car(100, 100, 30, 50,"AI");
@@ -29,12 +30,30 @@ const traffic = [
 
 let bestCar = cars[0];
 //! load previous bestcar Brain from localStorage
-bestCar.brain = JSON.parse(localStorage.getItem("bestBrain")!);
 if (localStorage.getItem("bestBrain")) {
+    for (let i = 0; i < cars.length; i++){
+        console.log("load from storage")
+        //set all cars to the best one
+        cars[i].brain = JSON.parse(localStorage.getItem("bestBrain")!);
+        if (i >= 0) {
+            NeuralNetwork.mutate(cars[i].brain!,0.1)
+        }
+    }
 }
 
 //animate ...
 animate();
+
+//save n styff;
+document.getElementById("save")?.addEventListener("click", () => {
+    save();
+    console.log("brain saved");
+})
+
+document.getElementById("retry")?.addEventListener("click", () => {
+    discard();
+    console.log("load")
+})
 
 
 function animate() {
@@ -93,6 +112,7 @@ function generateCars(N:number):Car[] {
 
 //??
 function save() {
+    console.log(bestCar.brain);
     localStorage.setItem("bestBrain", JSON.stringify(bestCar.brain));
 }
 

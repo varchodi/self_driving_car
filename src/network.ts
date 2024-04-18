@@ -1,3 +1,5 @@
+import { lerp } from "./util";
+
 export class NeuralNetwork{
     levels : Level[];
     constructor(public neuronCounts: number[]) {
@@ -16,6 +18,49 @@ export class NeuralNetwork{
             outputs =Level.feedForward(outputs,network.levels[i]);
         }
         return outputs;
+    }
+
+    //?? update weights and biases to the best ones 
+    static mutate(network: NeuralNetwork, amount: number = 1) {
+        // network.levels.forEach(level => {
+        //     for (let i = 0; i < level.biases.length; i++) {
+        //         level.biases[i] = lerp(
+        //             level.biases[i],
+        //             Math.random() * 2 - 1,
+        //             amount
+        //         )
+        //     }
+        //     for (let i = 0; level.weights.length; i++){
+        //         // for (let j = 0; j < level.weights[i].length; j++){
+        //         //     level.weights[i][j] = lerp(
+        //         //         level.weights[i][j],
+        //         //         Math.random() * 2 - 1,
+        //         //         amount
+        //         //     )
+        //         // }
+        //         console.log(level.weights[i].length-1)
+        //     }
+        // })
+
+        network.levels.forEach(level => {
+			for (let i = 0; i < level.biases.length; i++) {
+				level.biases[i] = lerp(
+					level.biases[i],
+					Math.random()*2-1,
+					amount
+				)
+			}
+			for (let i = 0; i < level.weights.length; i++) {
+				for (let j = 0; j < level.weights[i].length; j++) {
+					level.weights[i][j] = lerp(
+						level.weights[i][j],
+						Math.random() * 2 - 1,
+						amount
+					)
+				}				
+			}
+		})
+	
     }
 }
 export class Level{

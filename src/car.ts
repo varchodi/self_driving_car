@@ -41,7 +41,7 @@ export default class Car {
             // if (this.sensor) {
                 this.brain = new NeuralNetwork(
                     //raycounts, 6-> neursons on hidden layer, 4->output size (4 directions)
-                    [this.sensor.rayCount, 6, 4]
+                    [this.sensor.rayCount,6, 4]
                 )
             // }
         }

@@ -13,7 +13,7 @@ export default class Road {
         this.left = x - width / 4;
         this.right = x + width / 4;
 
-        const infinity = 1000000;
+        const infinity = 10000;
         this.top = -infinity;
         this.bottom = infinity;
 
@@ -77,6 +77,7 @@ export default class Road {
                 ctx.lineTo(border[i].x, border[i].y);
             }
             ctx.stroke();
-        })
+        });
+        ctx.setLineDash([]);
     }
 }
