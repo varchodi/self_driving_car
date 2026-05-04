@@ -7,7 +7,7 @@ export function getIntersection(
     A: { x: number; y: number },
     B: { x: number; y: number },
     C: { x: number; y: number },
-    D:{x: number;y: number}
+    D: { x: number; y: number }
 ) {
     const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
     const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
@@ -21,9 +21,39 @@ export function getIntersection(
             return {
                 x: lerp(A.x, B.x, t),
                 y: lerp(A.y, B.y, t),
-                offset:t
+                offset: t
             }
         }
     }
     return null;
+}
+
+//?? polylines 
+export function polyIntersect(
+    poly1: { x: number; y: number }[],
+    poly2: { x: number; y: number }[]
+): boolean {
+    for (let i = 0; i < poly1.length - 1; i++) {
+        for (let j = 0; j < poly2.length - 1; j++) {
+            const touch = getIntersection(
+                poly1[1],
+                poly1[(i + 1)],
+                poly2[j],
+                poly2[(j + 1)]
+            );
+
+            if (touch) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+export function getRGBA(value: number): string{
+    const alpha = Math.abs(value);
+                const R = value < 0 ? 0 : 255;
+                const G = R;
+                const B = value > 0 ? 0 : 255;
+                return "rgba("+R+","+G+","+B+","+alpha+")"
 }

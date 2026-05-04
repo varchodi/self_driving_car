@@ -1,81 +1,92 @@
+import Car from "./car";
 import { getIntersection, lerp } from "./util";
 
-export default class Sensor{
+export default class Sensor {
     rayCount: number;
     rayLength: number;
     raySread: number;
-    rays: {x:number,y:number}[][];
+    rays: { x: number, y: number }[][];
     readings: { x: number; y: number; offset: number; }[];
     constructor() {
-        this.rayCount =50;
-        this.rayLength = 200;
-        this.raySread = Math.PI /2;
+        this.rayCount = 5;
+        this.rayLength = 150;
+        this.raySread = Math.PI / 4;
         this.rays = [];
         this.readings = [];
     }
 
-    update(x:number,y:number,angle:number,roadBoarders: {
+    update(x: number, y: number, angle: number, roadBoarders: {
         x: number;
         y: number;
-    }[][] ) {
-        this.castRays(x,y,angle);
+    }[][],traffic:Car[]) {
+        this.castRays(x, y, angle);
         this.readings = [];
-        for (let i = 0; i < this.rays.length; i++){
+        for (let i = 0; i < this.rays.length; i++) {
             this.readings.push(
-                this.getReading(this.rays[i], roadBoarders)!
+                this.getReading(this.rays[i], roadBoarders,traffic)!
             );
         }
     }
 
-    private getReading(ray:{x:number,y:number}[],roadBoarders:{
+    private getReading(ray: { x: number, y: number }[], roadBoarders: {
         x: number;
         y: number;
-    }[][])
-    {
+    }[][],traffic:Car[]) {
         let touches: { x: number; y: number; offset: number; }[] = [];
         roadBoarders.forEach(boarder => {
             for (let i = 1; i < boarder.length; i++) {
                 const touch = getIntersection(
                     ray[0],
                     ray[1],
-                    boarder[i-1],
+                    boarder[i - 1],
                     boarder[i]
                 );
                 if (touch) {
                     touches.push(touch);
                 }
             }
-            });
+        });
+
+        for (let i = 0; i < traffic.length; i++) {
+            const poly = traffic[i].polygon;
+            for (let j = 0; j < poly.length; j++) {
+                const value = getIntersection(ray[0],ray[1],poly[j],poly[(j+1)%poly.length]);
+                if (value) {
+                    touches.push(value);
+                }
+            }
+            
+        }
 
         if (touches.length === 0) {
             return null;
         } else {
             const offsets = touches.map(e => e.offset);
             const minOffset = Math.min(...offsets);
-            return touches.find(e => e.offset == minOffset); 
+            return touches.find(e => e.offset == minOffset);
         }
     }
 
-    private castRays(x:number,y:number,angle:number) {
+    private castRays(x: number, y: number, angle: number) {
         this.rays = [];
-        for (let i = 0; i < this.rayCount; i++){
+        for (let i = 0; i < this.rayCount; i++) {
             const rayAngle = lerp(
                 this.raySread / 2,
                 -this.raySread / 2,
-                this.rayCount==1?.5:i / (this.rayCount - 1)
-            )+angle;
+                this.rayCount == 1 ? .5 : i / (this.rayCount - 1)
+            ) + angle;
 
             const start = { x, y };
             const end = {
-                x:x - Math.sin(rayAngle) * this.rayLength,
-                y:y - Math.cos(rayAngle) * this.rayLength
+                x: x - Math.sin(rayAngle) * this.rayLength,
+                y: y - Math.cos(rayAngle) * this.rayLength
             };
             this.rays.push([start, end]);
         }
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        for (let i = 0; i < this.rayCount; i++){
+        for (let i = 0; i < this.rayCount; i++) {
             let end = this.rays[i][1];
             if (this.readings[i]) {
                 end = this.readings[i];

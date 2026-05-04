@@ -3,12 +3,23 @@ export default class Controls{
     public left: boolean;
     public right: boolean;
     public reverse:boolean;
-    constructor() {
+    constructor(public type:string) {
         this.forward = false;
         this.left = false;
         this.right = false;
         this.reverse = false;
-        this.addKeyboardListener();
+
+        //?? make traffic cars moving by themselves 
+        switch (type) {
+            case "KEYS":
+                this.addKeyboardListener();
+                break;
+            case "DUMMY":
+                this.forward = true;
+                break;
+            default:
+                break;
+        }
     }
 
     //keyboard controls
